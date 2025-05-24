@@ -1,21 +1,60 @@
 {
   "expo": {
-    "name": "cyber",
-    "slug": "cyber",
+    "name": "Home Security Hub",
+    "slug": "home-security-hub",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "cyber",
+    "scheme": "homesecurity",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "privacy": "public",
+    "description": "Transform your smartphone into an intelligent home security and automation hub with network and Bluetooth device monitoring.",
+    "splash": {
+      "image": "./assets/images/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.homesecurity.hub",
+      "buildNumber": "1",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "This app needs location access to scan for Bluetooth devices for home security monitoring.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "This app needs location access to scan for Bluetooth devices for home security monitoring.",
+        "NSBluetoothAlwaysUsageDescription": "This app scans for Bluetooth devices to detect who is home for security purposes.",
+        "NSBluetoothPeripheralUsageDescription": "This app scans for Bluetooth devices to detect who is home for security purposes.",
+        "NSMicrophoneUsageDescription": "Optional microphone access for sound-based security alerts.",
+        "NSCameraUsageDescription": "Optional camera access for visual security monitoring."
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
+      "package": "com.homesecurity.hub",
+      "versionCode": 1,
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "BLUETOOTH",
+        "BLUETOOTH_ADMIN",
+        "BLUETOOTH_SCAN",
+        "BLUETOOTH_CONNECT",
+        "BLUETOOTH_ADVERTISE",
+        "ACCESS_WIFI_STATE",
+        "CHANGE_WIFI_STATE",
+        "ACCESS_NETWORK_STATE",
+        "CHANGE_NETWORK_STATE",
+        "INTERNET",
+        "WAKE_LOCK",
+        "FOREGROUND_SERVICE",
+        "RECORD_AUDIO",
+        "CAMERA",
+        "WRITE_EXTERNAL_STORAGE",
+        "READ_EXTERNAL_STORAGE"
+      ],
       "edgeToEdgeEnabled": true
     },
     "web": {
@@ -33,10 +72,29 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "This app needs location access to scan for Bluetooth devices for home security monitoring."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/icon.png",
+          "color": "#ffffff",
+          "sounds": ["./assets/sounds/notification.wav"]
+        }
       ]
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "home-security-hub-project"
+      }
     }
   }
 }
