@@ -293,3 +293,29 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 **⚠️ Disclaimer**: This software is provided for educational and personal security purposes. Users are responsible for ensuring compliance with applicable laws and regulations in their jurisdiction. Use responsibly and ethically.
+
+## Production readiness additions (2025-06)
+
+The following improvements were implemented by automated audit:
+
+1. **Centralised logging** – see `app/src/utils/logger.ts`. Replace or extend with your preferred remote logger (Sentry, LogRocket, Datadog…)
+2. **Robust error-handling** – critical services (`ble.ts`, `network.ts`, `notifications.ts`) now surface errors via `logger` and fail gracefully.
+3. **Typed Android permissions** – custom Wi-Fi / network permission constants ensure no type holes.
+4. **Automated tests** – initial Jest setup (`jest.config.js`) with a sample permissions test in `tests/permissions.test.ts`.
+5. **Continuous Integration hint** – run `npm test` and `npm run lint` in your CI pipeline to prevent regressions.
+
+```bash
+# Run the full suite locally
+npm run lint   # ESLint (errors only)
+npm test       # Jest unit tests
+npx tsc --noEmit   # Typecheck
+```
+
+### Next steps
+
+• Add more unit tests (BLE scanning, logic engine) and integration tests using Detox or React Native Testing Library.
+• Replace the mock network scan with a real ARP/MDNS approach in production builds.
+• Configure `logger` to forward errors in release mode.
+• Profile performance on low-end devices and adjust scan intervals accordingly.
+
+Happy shipping! 🚀

@@ -1,5 +1,5 @@
-import { Platform } from 'react-native';
 import * as Network from 'expo-network';
+import { logger } from '../utils/logger';
 
 interface NetworkDevice {
   ip: string;
@@ -46,7 +46,7 @@ export async function scanLAN(): Promise<NetworkDevice[]> {
 
     return devices;
   } catch (error) {
-    console.error('Network scan error:', error);
+    logger.error('Network scan error:', error);
     return [];
   }
 }

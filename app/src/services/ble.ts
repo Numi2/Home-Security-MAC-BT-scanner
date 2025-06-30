@@ -1,5 +1,6 @@
 import { PermissionsAndroid, Platform } from 'react-native';
 import { BleError, BleManager, Device } from 'react-native-ble-plx';
+import { logger } from '../utils/logger';
 
 const manager = new BleManager();
 
@@ -42,14 +43,14 @@ export async function startBLEScan(callback: (dev: BLEDevice, rssi: number) => v
     // Request permissions first
     const hasPermissions = await requestBLEPermissions();
     if (!hasPermissions) {
-      console.warn('BLE permissions not granted');
+      logger.warn('BLE permissions not granted');
       return false;
     }
 
     // Check if BLE is available
     const state = await manager.state();
     if (state !== 'PoweredOn') {
-      console.warn('Bluetooth is not powered on');
+      logger.warn('Bluetooth is not powered on');
       return false;
     }
 
@@ -63,7 +64,7 @@ export async function startBLEScan(callback: (dev: BLEDevice, rssi: number) => v
       { allowDuplicates: true, scanMode: 1 }, 
       (error: BleError | null, device: Device | null) => {
         if (error) {
-          console.error('BLE scan error:', error);
+          logger.error('BLE scan error:', error);
           return;
         }
 
@@ -94,7 +95,7 @@ export async function startBLEScan(callback: (dev: BLEDevice, rssi: number) => v
 
     return true;
   } catch (error) {
-    console.error('Failed to start BLE scan:', error);
+    logger.error('Failed to start BLE scan:', error);
     isScanning = false;
     return false;
   }
