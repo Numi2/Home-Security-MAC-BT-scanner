@@ -19,7 +19,13 @@ module.exports = defineConfig([
     },
     rules: {
       // Example: allow devDependencies in test files
-      'import/no-extraneous-dependencies': ['error', { devDependencies: ['**/*.test.ts', '**/*.test.tsx'] }],
+      'import/no-extraneous-dependencies': ['error', { devDependencies: ['**/tests/**', '**/*.test.ts', '**/*.test.tsx', 'eslint.config.js'] }],
+    },
+  },
+  {
+    files: ['eslint.config.js'],
+    rules: {
+      'import/no-extraneous-dependencies': 'off',
     },
   },
 ]);

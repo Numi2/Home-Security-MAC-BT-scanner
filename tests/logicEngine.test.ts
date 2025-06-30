@@ -1,3 +1,4 @@
+/* eslint-disable import/first */
 import { jest } from '@jest/globals';
 
 jest.mock('expo-notifications', () => ({
