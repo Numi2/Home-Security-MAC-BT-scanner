@@ -1,9 +1,10 @@
+import { describe, expect, it, jest } from '@jest/globals';
 import { requestAllPermissions } from '../app/src/utils/permissions';
 
 // The permissions utilities rely on native modules, so we mock react-native and expo-location/PermissionsAndroid APIs
 jest.mock('expo-location', () => ({
-  requestForegroundPermissionsAsync: jest.fn().mockResolvedValue({ status: 'granted' }),
-  getForegroundPermissionsAsync: jest.fn().mockResolvedValue({ status: 'granted' }),
+  requestForegroundPermissionsAsync: (jest.fn() as any).mockResolvedValue({ status: 'granted' }),
+  getForegroundPermissionsAsync: (jest.fn() as any).mockResolvedValue({ status: 'granted' }),
 }));
 
 jest.mock('react-native', () => {
@@ -15,7 +16,7 @@ jest.mock('react-native', () => {
         BLUETOOTH_SCAN: 'android.permission.BLUETOOTH_SCAN',
         BLUETOOTH_CONNECT: 'android.permission.BLUETOOTH_CONNECT',
       },
-      requestMultiple: jest.fn().mockResolvedValue({
+      requestMultiple: (jest.fn() as any).mockResolvedValue({
         'android.permission.ACCESS_FINE_LOCATION': 'granted',
         'android.permission.ACCESS_COARSE_LOCATION': 'granted',
         'android.permission.BLUETOOTH_SCAN': 'granted',
@@ -23,7 +24,7 @@ jest.mock('react-native', () => {
         'android.permission.ACCESS_WIFI_STATE': 'granted',
         'android.permission.ACCESS_NETWORK_STATE': 'granted',
       }),
-      check: jest.fn().mockResolvedValue(true),
+      check: (jest.fn() as any).mockResolvedValue(true),
       RESULTS: { GRANTED: 'granted' },
     },
     Platform: { OS: 'android' },
