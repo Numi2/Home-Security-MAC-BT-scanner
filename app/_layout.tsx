@@ -9,6 +9,7 @@ import { initializeNotifications } from '@/app/src/services/notifications';
 import { initializeStorage } from '@/app/src/storage/secureStorage';
 import { requestAllPermissions } from '@/app/src/utils/permissions';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { ErrorBoundary } from '../components/ErrorBoundary';
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -21,6 +22,8 @@ export default function RootLayout() {
     const initializeApp = async () => {
       try {
         console.log('Initializing Home Security Hub...');
+        
+        // Production configuration validation would go here
         
         // Request all necessary permissions
         const permissions = await requestAllPermissions();
@@ -51,12 +54,14 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    <ErrorBoundary>
+      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+        <Stack>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="+not-found" />
+        </Stack>
+        <StatusBar style="auto" />
+      </ThemeProvider>
+    </ErrorBoundary>
   );
 }

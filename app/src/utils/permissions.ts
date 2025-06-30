@@ -29,9 +29,6 @@ export async function requestAllPermissions(): Promise<{
         PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN,
         PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,
         PermissionsAndroid.PERMISSIONS.BLUETOOTH_ADVERTISE,
-        PermissionsAndroid.PERMISSIONS.ACCESS_WIFI_STATE,
-        PermissionsAndroid.PERMISSIONS.CHANGE_WIFI_STATE,
-        PermissionsAndroid.PERMISSIONS.ACCESS_NETWORK_STATE,
         PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
         PermissionsAndroid.PERMISSIONS.CAMERA,
         PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
@@ -43,10 +40,7 @@ export async function requestAllPermissions(): Promise<{
         androidPermissions[PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT] === 'granted'
       );
 
-      results.network = (
-        androidPermissions[PermissionsAndroid.PERMISSIONS.ACCESS_WIFI_STATE] === 'granted' &&
-        androidPermissions[PermissionsAndroid.PERMISSIONS.ACCESS_NETWORK_STATE] === 'granted'
-      );
+      results.network = true; // Network access is granted by default on Android
 
       results.audio = androidPermissions[PermissionsAndroid.PERMISSIONS.RECORD_AUDIO] === 'granted';
       results.camera = androidPermissions[PermissionsAndroid.PERMISSIONS.CAMERA] === 'granted';
@@ -86,10 +80,9 @@ export async function checkPermissionStatus(): Promise<{
       // Check Android permissions
       const bluetoothScan = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN);
       const bluetoothConnect = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT);
-      const wifiState = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_WIFI_STATE);
 
       status.bluetooth = bluetoothScan && bluetoothConnect;
-      status.network = wifiState;
+      status.network = true; // Network access is granted by default
     } else {
       // iOS defaults
       status.bluetooth = true;

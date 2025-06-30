@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { scanLAN } from '../services/network';
 import { logEvent } from '../storage/logger';
 
@@ -7,6 +7,7 @@ export function NetworkScanner() {
     const performScan = async () => {
       try {
         const devices = await scanLAN();
+        
         if (devices.length > 0) {
           logEvent('network', {
             deviceCount: devices.length,
@@ -19,6 +20,7 @@ export function NetworkScanner() {
           });
         }
       } catch (error) {
+
         console.error('Network scan failed:', error);
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
         logEvent('network_error', { error: errorMessage });
@@ -29,7 +31,7 @@ export function NetworkScanner() {
     performScan();
 
     // Set up interval for regular scanning
-    const interval = setInterval(performScan, 30000); // Scan every 30 seconds
+    const interval = setInterval(performScan, 30000);
 
     return () => clearInterval(interval);
   }, []);

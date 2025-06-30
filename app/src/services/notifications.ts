@@ -10,6 +10,8 @@ Notifications.setNotificationHandler({
     shouldShowAlert: true,
     shouldPlaySound: true,
     shouldSetBadge: true,
+    shouldShowBanner: true,
+    shouldShowList: true,
   }),
 });
 
@@ -152,7 +154,7 @@ export async function schedulePeriodicScan(): Promise<void> {
       trigger: {
         seconds: 1800, // 30 minutes
         repeats: true,
-      },
+      } as any,
       identifier: 'periodic-scan',
     });
 
@@ -163,9 +165,10 @@ export async function schedulePeriodicScan(): Promise<void> {
 }
 
 // Background task for notifications
-TaskManager.defineTask(BACKGROUND_NOTIFICATION_TASK, ({ data, error, executionInfo }) => {
+TaskManager.defineTask(BACKGROUND_NOTIFICATION_TASK, async ({ data, error, executionInfo }) => {
   console.log('Received a notification in the background!');
   // Handle background notification logic here
+  return Promise.resolve();
 });
 
 export async function registerBackgroundTask(): Promise<void> {

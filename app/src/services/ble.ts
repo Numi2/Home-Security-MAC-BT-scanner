@@ -1,5 +1,5 @@
-import { BleManager, Device, Subscription, BleError } from 'react-native-ble-plx';
 import { PermissionsAndroid, Platform } from 'react-native';
+import { BleError, BleManager, Device, Subscription } from 'react-native-ble-plx';
 
 const manager = new BleManager();
 
@@ -58,7 +58,7 @@ export async function startBLEScan(callback: (dev: BLEDevice, rssi: number) => v
     }
 
     isScanning = true;
-    scanSubscription = manager.startDeviceScan(
+    manager.startDeviceScan(
       null, 
       { allowDuplicates: true, scanMode: 1 }, 
       (error: BleError | null, device: Device | null) => {
@@ -70,7 +70,7 @@ export async function startBLEScan(callback: (dev: BLEDevice, rssi: number) => v
         if (device && device.rssi != null) {
           const bleDevice: BLEDevice = {
             id: device.id,
-            name: device.name || device.localName,
+            name: device.name || device.localName || undefined,
             rssi: device.rssi,
             lastSeen: Date.now(),
             isNearby: device.rssi > -80 // Consider devices with RSSI > -80dBm as nearby
@@ -83,6 +83,14 @@ export async function startBLEScan(callback: (dev: BLEDevice, rssi: number) => v
         }
       }
     );
+    
+    // Create a simple subscription object for cleanup
+    scanSubscription = {
+      remove: () => {
+        manager.stopDeviceScan();
+        isScanning = false;
+      }
+    };
 
     // Auto-stop scan after 30 seconds to save battery
     setTimeout(() => {

@@ -379,7 +379,7 @@ export default function SecurityDashboard() {
         {/* Scanning Status */}
         {isScanning && (
           <View style={styles.scanningStatus}>
-            <Ionicons name="radar" size={16} color="#2196F3" />
+            <Ionicons name="refresh" size={16} color="#2196F3" />
             <Text style={styles.scanningText}>Scanning network...</Text>
           </View>
         )}
@@ -473,7 +473,7 @@ export default function SecurityDashboard() {
         {/* Device Status Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>
-            <Ionicons name="devices" size={20} color="#666" /> Device Status
+            <Ionicons name="hardware-chip" size={20} color="#666" /> Device Status
           </Text>
           
           <View style={styles.statusRow}>
