@@ -1,6 +1,7 @@
 import * as Notifications from 'expo-notifications';
 import * as TaskManager from 'expo-task-manager';
 import { Platform } from 'react-native';
+import { logger } from '../utils/logger';
 
 const BACKGROUND_NOTIFICATION_TASK = 'background-notification';
 
@@ -10,6 +11,8 @@ Notifications.setNotificationHandler({
     shouldShowAlert: true,
     shouldPlaySound: true,
     shouldSetBadge: true,
+    shouldShowBanner: true,
+    shouldShowList: true,
   }),
 });
 
@@ -33,7 +36,7 @@ export async function initializeNotifications(): Promise<boolean> {
     }
 
     if (finalStatus !== 'granted') {
-      console.warn('Notification permissions not granted');
+      logger.warn('Notification permissions not granted');
       return false;
     }
 
@@ -59,7 +62,7 @@ export async function initializeNotifications(): Promise<boolean> {
 
     return true;
   } catch (error) {
-    console.error('Failed to initialize notifications:', error);
+    logger.error('Failed to initialize notifications:', error);
     return false;
   }
 }
@@ -87,9 +90,9 @@ export async function sendSecurityAlert(alert: SecurityAlert): Promise<void> {
       identifier: `security-${Date.now()}`,
     });
 
-    console.log(`Security alert sent: ${alert.title}`);
+    logger.info(`Security alert sent: ${alert.title}`);
   } catch (error) {
-    console.error('Failed to send security alert:', error);
+    logger.error('Failed to send security alert:', error);
   }
 }
 
@@ -131,9 +134,9 @@ export async function sendUnusualTimeAlert(hour: number, unknownDeviceCount: num
 export async function clearAllNotifications(): Promise<void> {
   try {
     await Notifications.dismissAllNotificationsAsync();
-    console.log('All notifications cleared');
+    logger.info('All notifications cleared');
   } catch (error) {
-    console.error('Failed to clear notifications:', error);
+    logger.error('Failed to clear notifications:', error);
   }
 }
 
@@ -150,29 +153,30 @@ export async function schedulePeriodicScan(): Promise<void> {
         data: { type: 'periodic_scan' },
       },
       trigger: {
+        type: 'timeInterval',
         seconds: 1800, // 30 minutes
         repeats: true,
-      },
+      } as Notifications.TimeIntervalTriggerInput,
       identifier: 'periodic-scan',
     });
 
-    console.log('Periodic scan scheduled');
+    logger.info('Periodic scan scheduled');
   } catch (error) {
-    console.error('Failed to schedule periodic scan:', error);
+    logger.error('Failed to schedule periodic scan:', error);
   }
 }
 
 // Background task for notifications
-TaskManager.defineTask(BACKGROUND_NOTIFICATION_TASK, ({ data, error, executionInfo }) => {
-  console.log('Received a notification in the background!');
+TaskManager.defineTask(BACKGROUND_NOTIFICATION_TASK, async ({ data, error, executionInfo }) => {
+  logger.debug('Received a notification in the background!');
   // Handle background notification logic here
 });
 
 export async function registerBackgroundTask(): Promise<void> {
   try {
     await Notifications.registerTaskAsync(BACKGROUND_NOTIFICATION_TASK);
-    console.log('Background notification task registered');
+    logger.info('Background notification task registered');
   } catch (error) {
-    console.error('Failed to register background task:', error);
+    logger.error('Failed to register background task:', error);
   }
 } 

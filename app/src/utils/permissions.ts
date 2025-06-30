@@ -1,6 +1,11 @@
 import * as Location from 'expo-location';
 import { PermissionsAndroid, Platform } from 'react-native';
 
+// Some Android permissions are missing from the React Native typings. We declare them here to avoid TypeScript errors
+const PERM_ACCESS_WIFI_STATE = 'android.permission.ACCESS_WIFI_STATE';
+const PERM_CHANGE_WIFI_STATE = 'android.permission.CHANGE_WIFI_STATE';
+const PERM_ACCESS_NETWORK_STATE = 'android.permission.ACCESS_NETWORK_STATE';
+
 export async function requestAllPermissions(): Promise<{
   location: boolean;
   camera: boolean;
@@ -29,14 +34,14 @@ export async function requestAllPermissions(): Promise<{
         PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN,
         PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,
         PermissionsAndroid.PERMISSIONS.BLUETOOTH_ADVERTISE,
-        PermissionsAndroid.PERMISSIONS.ACCESS_WIFI_STATE,
-        PermissionsAndroid.PERMISSIONS.CHANGE_WIFI_STATE,
-        PermissionsAndroid.PERMISSIONS.ACCESS_NETWORK_STATE,
+        PERM_ACCESS_WIFI_STATE as any,
+        PERM_CHANGE_WIFI_STATE as any,
+        PERM_ACCESS_NETWORK_STATE as any,
         PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
         PermissionsAndroid.PERMISSIONS.CAMERA,
         PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
         PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
-      ]);
+      ] as any);
 
       results.bluetooth = (
         androidPermissions[PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN] === 'granted' &&
@@ -44,8 +49,8 @@ export async function requestAllPermissions(): Promise<{
       );
 
       results.network = (
-        androidPermissions[PermissionsAndroid.PERMISSIONS.ACCESS_WIFI_STATE] === 'granted' &&
-        androidPermissions[PermissionsAndroid.PERMISSIONS.ACCESS_NETWORK_STATE] === 'granted'
+        (androidPermissions as Record<string, string>)[PERM_ACCESS_WIFI_STATE] === 'granted' &&
+        (androidPermissions as Record<string, string>)[PERM_ACCESS_NETWORK_STATE] === 'granted'
       );
 
       results.audio = androidPermissions[PermissionsAndroid.PERMISSIONS.RECORD_AUDIO] === 'granted';
@@ -86,7 +91,7 @@ export async function checkPermissionStatus(): Promise<{
       // Check Android permissions
       const bluetoothScan = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN);
       const bluetoothConnect = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT);
-      const wifiState = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_WIFI_STATE);
+      const wifiState = await PermissionsAndroid.check(PERM_ACCESS_WIFI_STATE as any);
 
       status.bluetooth = bluetoothScan && bluetoothConnect;
       status.network = wifiState;

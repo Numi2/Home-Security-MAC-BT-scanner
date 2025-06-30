@@ -5,8 +5,10 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
 
+import { ErrorBoundary } from '@/app/src/components/ErrorBoundary';
 import { initializeNotifications } from '@/app/src/services/notifications';
 import { initializeStorage } from '@/app/src/storage/secureStorage';
+import { logger } from '@/app/src/utils/logger';
 import { requestAllPermissions } from '@/app/src/utils/permissions';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
@@ -20,23 +22,23 @@ export default function RootLayout() {
     // Initialize app services on startup
     const initializeApp = async () => {
       try {
-        console.log('Initializing Home Security Hub...');
+        logger.info('Initializing Home Security Hub...');
         
         // Request all necessary permissions
         const permissions = await requestAllPermissions();
-        console.log('Permissions granted:', permissions);
+        logger.debug('Permissions granted:', permissions);
         
         // Initialize secure storage
         const storageInitialized = await initializeStorage();
-        console.log('Storage initialized:', storageInitialized);
+        logger.debug('Storage initialized:', storageInitialized);
         
         // Initialize notifications
         const notificationsInitialized = await initializeNotifications();
-        console.log('Notifications initialized:', notificationsInitialized);
+        logger.debug('Notifications initialized:', notificationsInitialized);
         
-        console.log('App initialization complete');
+        logger.info('App initialization complete');
       } catch (error) {
-        console.error('App initialization failed:', error);
+        logger.error('App initialization failed:', error);
       }
     };
 
@@ -51,12 +53,14 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    <ErrorBoundary>
+      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+        <Stack>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="+not-found" />
+        </Stack>
+        <StatusBar style="auto" />
+      </ThemeProvider>
+    </ErrorBoundary>
   );
 }

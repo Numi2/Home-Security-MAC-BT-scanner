@@ -6,5 +6,26 @@ module.exports = defineConfig([
   expoConfig,
   {
     ignores: ['dist/*'],
+    plugins: {
+      jest: require('eslint-plugin-jest'),
+    },
+    languageOptions: {
+      globals: {
+        jest: 'readonly',
+        describe: 'readonly',
+        it: 'readonly',
+        expect: 'readonly',
+      },
+    },
+    rules: {
+      // Example: allow devDependencies in test files
+      'import/no-extraneous-dependencies': ['error', { devDependencies: ['**/tests/**', '**/*.test.ts', '**/*.test.tsx', 'eslint.config.js'] }],
+    },
+  },
+  {
+    files: ['eslint.config.js'],
+    rules: {
+      'import/no-extraneous-dependencies': 'off',
+    },
   },
 ]);

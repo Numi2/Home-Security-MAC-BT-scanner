@@ -1,5 +1,6 @@
-import { BleManager, Device, Subscription, BleError } from 'react-native-ble-plx';
 import { PermissionsAndroid, Platform } from 'react-native';
+import { BleError, BleManager, Device } from 'react-native-ble-plx';
+import { logger } from '../utils/logger';
 
 const manager = new BleManager();
 
@@ -12,7 +13,7 @@ interface BLEDevice {
 }
 
 const knownBLEDevices = new Map<string, BLEDevice>();
-let scanSubscription: Subscription | null = null;
+let scanTimeout: NodeJS.Timeout | null = null;
 let isScanning = false;
 
 export async function requestBLEPermissions(): Promise<boolean> {
@@ -42,14 +43,14 @@ export async function startBLEScan(callback: (dev: BLEDevice, rssi: number) => v
     // Request permissions first
     const hasPermissions = await requestBLEPermissions();
     if (!hasPermissions) {
-      console.warn('BLE permissions not granted');
+      logger.warn('BLE permissions not granted');
       return false;
     }
 
     // Check if BLE is available
     const state = await manager.state();
     if (state !== 'PoweredOn') {
-      console.warn('Bluetooth is not powered on');
+      logger.warn('Bluetooth is not powered on');
       return false;
     }
 
@@ -58,19 +59,19 @@ export async function startBLEScan(callback: (dev: BLEDevice, rssi: number) => v
     }
 
     isScanning = true;
-    scanSubscription = manager.startDeviceScan(
+    manager.startDeviceScan(
       null, 
       { allowDuplicates: true, scanMode: 1 }, 
       (error: BleError | null, device: Device | null) => {
         if (error) {
-          console.error('BLE scan error:', error);
+          logger.error('BLE scan error:', error);
           return;
         }
 
         if (device && device.rssi != null) {
           const bleDevice: BLEDevice = {
             id: device.id,
-            name: device.name || device.localName,
+            name: (device.name ?? device.localName ?? undefined) as string | undefined,
             rssi: device.rssi,
             lastSeen: Date.now(),
             isNearby: device.rssi > -80 // Consider devices with RSSI > -80dBm as nearby
@@ -84,27 +85,26 @@ export async function startBLEScan(callback: (dev: BLEDevice, rssi: number) => v
       }
     );
 
-    // Auto-stop scan after 30 seconds to save battery
-    setTimeout(() => {
+    // Auto-stop scan after 30 seconds to save battery and restart five seconds later.
+    scanTimeout = setTimeout(() => {
       if (isScanning) {
         stopBLEScan();
-        // Restart scan after a short break
         setTimeout(() => startBLEScan(callback), 5000);
       }
-    }, 30000);
+    }, 30_000);
 
     return true;
   } catch (error) {
-    console.error('Failed to start BLE scan:', error);
+    logger.error('Failed to start BLE scan:', error);
     isScanning = false;
     return false;
   }
 }
 
 export function stopBLEScan(): void {
-  if (scanSubscription) {
-    scanSubscription.remove();
-    scanSubscription = null;
+  if (scanTimeout) {
+    clearTimeout(scanTimeout);
+    scanTimeout = null;
   }
   if (isScanning) {
     manager.stopDeviceScan();
