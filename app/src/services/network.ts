@@ -1,5 +1,6 @@
 import * as Network from 'expo-network';
 import { logger } from '../utils/logger';
+import { perfEnd, perfStart } from '../utils/performance';
 
 interface NetworkDevice {
   ip: string;
@@ -26,6 +27,7 @@ export async function scanLAN(): Promise<NetworkDevice[]> {
     const devices: NetworkDevice[] = [];
 
     // Ping sweep of the network
+    perfStart('lan-scan');
     const pingPromises = [];
     for (let i = 1; i <= 254; i++) {
       const targetIP = `${networkBase}.${i}`;
@@ -43,6 +45,8 @@ export async function scanLAN(): Promise<NetworkDevice[]> {
         }
       }
     }
+
+    perfEnd('lan-scan');
 
     return devices;
   } catch (error) {
